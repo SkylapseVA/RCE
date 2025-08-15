@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "[[RCE]]",
+    Name = "RCE | Rayfield",
     Icon = 0,
-    LoadingTitle = "RCE [Ty Rayfield]",
+    LoadingTitle = "Loading",
     LoadingSubtitle = "By RCE",
     ShowText = "Rayfield",
     Theme = "AmberGlow",
@@ -33,9 +33,9 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- 📂 Example Tabs
-local MainTab = Window:CreateTab("Main Features", 4483362458) -- Roblox asset ID for icon
-local SettingsTab = Window:CreateTab("Settings", 4483362458)
-local FunTab = Window:CreateTab("Fun Stuff", 4483362458)
+local MainTab = Window:CreateTab("Main Features", 108127592774922) -- Roblox asset ID for icon
+local SettingsTab = Window:CreateTab("Settings", 108127592774922)
+local FunTab = Window:CreateTab("Fun Stuff", 108127592774922)
 
 -- 📝 Main Features
 MainTab:CreateSection("Controls")
