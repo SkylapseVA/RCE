@@ -33,9 +33,58 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- 📂 Tabs
-local UniversalTab = Window:CreateTab("Universal", 108127592774922) -- OP local stuff
+local InfoTab = Window:CreateTab("Info", 108127592774922)
+local UniversalTab = Window:CreateTab("Universal", 108127592774922)
 local FunTab = Window:CreateTab("Randomness", 108127592774922)
 local SettingsTab = Window:CreateTab("Settings", 108127592774922)
+
+-- 🛈 INFO TAB
+InfoTab:CreateSection("About")
+
+InfoTab:CreateLabel("RCE Dev Panel - Version: 1.0.0")
+InfoTab:CreateLabel("Created by: RCE Developers")
+InfoTab:CreateLabel("Powered by: Rayfield UI Library")
+InfoTab:CreateLabel("Discord: discord.gg/DdPYGZFA")
+
+InfoTab:CreateParagraph({
+    Title = "Description",
+    Content = "This panel is a local developer tool designed for quick testing, building, and messing around in Roblox Studio. It includes movement mods, fun experimental tools, and customization options."
+})
+
+InfoTab:CreateParagraph({
+    Title = "Changelog",
+    Content = [[
+v1.0.0:
+- Added Universal tab with WalkSpeed, JumpPower, Noclip, GodMode, Teleport Up
+- Added Fun tab with Ball spawner, Platform spawner, Launch into space, Rainbow mode
+- Added Info tab with version, credits, and changelog
+    ]]
+})
+
+InfoTab:CreateButton({
+    Name = "Copy Discord Invite",
+    Callback = function()
+        if setclipboard then
+            setclipboard("https://discord.gg/DdPYGZFA")
+            print("Discord invite copied to clipboard!")
+        else
+            print("Clipboard not supported in this environment.")
+        end
+    end
+})
+
+InfoTab:CreateButton({
+    Name = "Print System Info",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        print("Username:", player.Name)
+        print("Display Name:", player.DisplayName)
+        print("UserId:", player.UserId)
+        print("Game Name:", game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
+        print("PlaceId:", game.PlaceId)
+        print("JobId:", game.JobId)
+    end
+})
 
 -- 🎬 UNIVERSAL (Dev Tools)
 UniversalTab:CreateSection("Movement")
