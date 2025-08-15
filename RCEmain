@@ -205,55 +205,56 @@ UniversalTab:CreateToggle({Name = "Rainbow Character", CurrentValue = false, Fla
     end
 end})
 
--- ✅ DeathTP with respawn-safe handling
-local lastPosition = nil
-local DeathTPEnabled = false
-local deathConn
+-- ✅ DeathTP Manual Version (No Toggle)
+local lastDeathPosition = nil
 
--- Track last position
-game:GetService("RunService").Stepped:Connect(function()
-    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        lastPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    end
-end)
-
-local function connectDeath()
+-- Track death
+local function trackDeath()
     local player = game.Players.LocalPlayer
-    if not player.Character then return end
-    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    local char = player.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
     if hum then
-        if deathConn then deathConn:Disconnect() end
-        deathConn = hum.Died:Connect(function()
-            wait(0.5)
-            if DeathTPEnabled and lastPosition then
-                local char = player.Character or player.CharacterAdded:Wait()
-                local hrp = char:WaitForChild("HumanoidRootPart")
-                hrp.CFrame = lastPosition
-                print("Teleported back to last position!")
+        hum.Died:Connect(function()
+            if char:FindFirstChild("HumanoidRootPart") then
+                lastDeathPosition = char.HumanoidRootPart.CFrame
+                print("Death position recorded!")
             end
         end)
     end
 end
 
-game.Players.LocalPlayer.CharacterAdded:Connect(function()
-    if DeathTPEnabled then
-        connectDeath()
-    end
+-- Connect to respawn
+game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
+    wait(1) -- small delay to ensure Humanoid exists
+    trackDeath()
 end)
 
-UniversalTab:CreateToggle({
-    Name = "DeathTP",
-    CurrentValue = false,
-    Flag = "DeathTPToggle",
-    Callback = function(Value)
-        DeathTPEnabled = Value
-        if Value then
-            connectDeath()
+-- Initial setup for existing character
+if game.Players.LocalPlayer.Character then
+    trackDeath()
+end
+
+-- Button to teleport to last death position
+UniversalTab:CreateButton({
+    Name = "Teleport to Death Position",
+    Callback = function()
+        if lastDeathPosition then
+            local player = game.Players.LocalPlayer
+            local char = player.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                char.HumanoidRootPart.CFrame = lastDeathPosition
+                print("Teleported to last death position!")
+            else
+                print("Character not ready yet!")
+            end
         else
-            if deathConn then deathConn:Disconnect() end
+            print("No death position recorded yet!")
         end
     end
 })
+
+
 
 -- 🌟 Player ESP / Highlight
 local ESPEnabled = false
