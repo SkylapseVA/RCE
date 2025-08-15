@@ -1,8 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- 🌟 Window
 local Window = Rayfield:CreateWindow({
     Name = "RCE | Rayfield",
-    Icon = 0,
+    Icon = 100729310939881, -- your Roblox image asset ID
     LoadingTitle = "Loading",
     LoadingSubtitle = "By RCE",
     ShowText = "Rayfield",
@@ -40,7 +41,6 @@ local SettingsTab = Window:CreateTab("Settings", 100729310939881)
 
 -- 🛈 INFO TAB
 InfoTab:CreateSection("About")
-
 InfoTab:CreateLabel("RCE Dev Panel - Version: 1.0.0")
 InfoTab:CreateLabel("Created by: RCE Developers")
 InfoTab:CreateLabel("Powered by: Rayfield UI Library")
@@ -55,7 +55,7 @@ InfoTab:CreateParagraph({
     Title = "Changelog",
     Content = [[
 v1.0.0:
-- Added Universal tab with WalkSpeed, JumpPower, Noclip, GodMode, Teleport Up
+- Added Universal tab with WalkSpeed, JumpPower, Noclip, GodMode, Teleport Up, Fly, Infinite Jump, Sit Anywhere, Rejoin Server
 - Added Fun tab with Ball spawner, Platform spawner, Launch into space, Rainbow mode
 - Added Info tab with version, credits, and changelog
     ]]
@@ -78,7 +78,7 @@ InfoTab:CreateButton({
     Callback = function()
         if setclipboard then
             setclipboard("rcestaffteam@gmail.com")
-            print("RCE staff tean copied to ClipBoard!")
+            print("RCE staff team copied to clipboard!")
         else
             print("Clipboard not supported in this environment.")
         end
@@ -98,9 +98,10 @@ InfoTab:CreateButton({
     end
 })
 
--- 🎬 UNIVERSAL (Dev Tools)
-UniversalTab:CreateSection("Movement")
+-- 🎬 UNIVERSAL TAB
+UniversalTab:CreateSection("Movement & Dev Tools")
 
+-- WalkSpeed
 UniversalTab:CreateSlider({
     Name = "WalkSpeed",
     Range = {16, 200},
@@ -109,10 +110,14 @@ UniversalTab:CreateSlider({
     CurrentValue = 16,
     Flag = "WalkSpeedSlider",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = Value
+        end
     end
 })
 
+-- JumpPower
 UniversalTab:CreateSlider({
     Name = "JumpPower",
     Range = {50, 500},
@@ -121,10 +126,14 @@ UniversalTab:CreateSlider({
     CurrentValue = 50,
     Flag = "JumpPowerSlider",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = Value
+        end
     end
 })
 
+-- Noclip
 UniversalTab:CreateToggle({
     Name = "Noclip (Walk Through Walls)",
     CurrentValue = false,
@@ -147,6 +156,7 @@ UniversalTab:CreateToggle({
     end
 })
 
+-- Reset Character
 UniversalTab:CreateButton({
     Name = "Reset Character",
     Callback = function()
@@ -154,6 +164,7 @@ UniversalTab:CreateButton({
     end
 })
 
+-- Teleport Up
 UniversalTab:CreateButton({
     Name = "Teleport Up",
     Callback = function()
@@ -162,6 +173,7 @@ UniversalTab:CreateButton({
     end
 })
 
+-- God Mode
 UniversalTab:CreateButton({
     Name = "God Mode (Humanoid)",
     Callback = function()
@@ -178,7 +190,80 @@ UniversalTab:CreateButton({
     end
 })
 
--- 🎯 FUN STUFF
+-- Fly
+UniversalTab:CreateToggle({
+    Name = "Fly (Hold Space)",
+    CurrentValue = false,
+    Flag = "FlyToggle",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local uis = game:GetService("UserInputService")
+        local rs = game:GetService("RunService")
+        local root = char:WaitForChild("HumanoidRootPart")
+
+        if Value then
+            _G.Fly = true
+            local bv = Instance.new("BodyVelocity")
+            bv.Velocity = Vector3.new(0,0,0)
+            bv.MaxForce = Vector3.new(0,0,0)
+            bv.Parent = root
+
+            _G.FlyConn = rs.RenderStepped:Connect(function()
+                if uis:IsKeyDown(Enum.KeyCode.Space) then
+                    bv.MaxForce = Vector3.new(4000,4000,4000)
+                    bv.Velocity = root.CFrame.UpVector * 50
+                else
+                    bv.MaxForce = Vector3.new(0,0,0)
+                end
+            end)
+        else
+            _G.Fly = false
+            if _G.FlyConn then _G.FlyConn:Disconnect() end
+            local bv = root:FindFirstChildOfClass("BodyVelocity")
+            if bv then bv:Destroy() end
+        end
+    end
+})
+
+-- Infinite Jump
+UniversalTab:CreateToggle({
+    Name = "Infinite Jump",
+    CurrentValue = false,
+    Flag = "InfJumpToggle",
+    Callback = function(Value)
+        local uis = game:GetService("UserInputService")
+        if Value then
+            _G.InfJump = uis.JumpRequest:Connect(function()
+                local char = game.Players.LocalPlayer.Character
+                if char and char:FindFirstChildOfClass("Humanoid") then
+                    char:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+                end
+            end)
+        else
+            if _G.InfJump then _G.InfJump:Disconnect() end
+        end
+    end
+})
+
+-- Sit Anywhere
+UniversalTab:CreateButton({
+    Name = "Sit Anywhere",
+    Callback = function()
+        local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.Sit = true end
+    end
+})
+
+-- Rejoin Server
+UniversalTab:CreateButton({
+    Name = "Rejoin Server",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+    end
+})
+
+-- 🎯 FUN TAB
 FunTab:CreateSection("Playground")
 
 FunTab:CreateButton({
@@ -237,14 +322,12 @@ FunTab:CreateToggle({
                 end
             end)
         else
-            if _G.RainbowLoop then
-                _G.RainbowLoop:Disconnect()
-            end
+            if _G.RainbowLoop then _G.RainbowLoop:Disconnect() end
         end
     end
 })
 
--- ⚙️ SETTINGS
+-- ⚙️ SETTINGS TAB
 SettingsTab:CreateSection("UI Settings")
 
 SettingsTab:CreateKeybind({
@@ -252,7 +335,7 @@ SettingsTab:CreateKeybind({
     CurrentKeybind = "K",
     HoldToInteract = false,
     Flag = "ToggleUIBind",
-    Callback = function(Keybind)
+    Callback = function()
         Rayfield:ToggleUI()
     end
 })
