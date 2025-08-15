@@ -263,11 +263,11 @@ UniversalTab:CreateButton({
     end
 })
 UniversalTab:CreateButton({
-    Name = "Fling Player (Local Teleport)",
+    Name = "Insane Fling (Local)",
     Callback = function()
         local player = game.Players.LocalPlayer
         local mouse = player:GetMouse()
-        local char = player.Character
+        local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
         local runService = game:GetService("RunService")
         local originalCFrame = hrp.CFrame
@@ -282,49 +282,39 @@ UniversalTab:CreateButton({
             if not targetHRP then return end
 
             clickConn:Disconnect()
-
-            -- Start fling loop
             _G.FlingActive = true
 
-            -- Spin
+            -- Spin insanely fast
             local spinConn
             spinConn = runService.RenderStepped:Connect(function(delta)
                 if not _G.FlingActive then return end
-                -- Rotate player insanely fast (full rotation in 0.5 seconds)
-                hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(360/0.5)*delta, 0)
+                hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(360/0.01)*delta, 0)
             end)
 
-            -- Fling loop (teleport on top of target constantly, toggle collisions)
+            -- Constant teleport + collisions flash
             spawn(function()
-                local flingDuration = 4
-                local startTime = tick()
-                while tick() - startTime < flingDuration do
-                    if not _G.FlingActive then break end
+                while _G.FlingActive do
+                    -- Teleport to target
+                    hrp.CFrame = targetHRP.CFrame
 
-                    -- Turn collisions off
+                    -- Flash collisions
                     for _, part in ipairs(char:GetDescendants()) do
                         if part:IsA("BasePart") then
                             part.CanCollide = false
                         end
                     end
-
-                    -- Teleport on top of target
-                    hrp.CFrame = targetHRP.CFrame
-
-                    -- Wait 0.05 to allow collisions to register
-                    wait(0.05)
-
-                    -- Turn collisions on for fling effect
+                    runService.RenderStepped:Wait()
                     for _, part in ipairs(char:GetDescendants()) do
                         if part:IsA("BasePart") then
                             part.CanCollide = true
                         end
                     end
-
-                    wait(0.05)
+                    runService.RenderStepped:Wait()
                 end
+            end)
 
-                -- Cleanup
+            -- Stop after 4 seconds and return
+            delay(4, function()
                 _G.FlingActive = false
                 spinConn:Disconnect()
                 hrp.CFrame = originalCFrame
@@ -332,6 +322,7 @@ UniversalTab:CreateButton({
         end)
     end
 })
+
 
 
 
