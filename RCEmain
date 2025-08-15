@@ -39,7 +39,10 @@ InfoTab:CreateLabel("Discord: https://discord.gg/ddHwwgMB")
 InfoTab:CreateParagraph({Title = "Description", Content = "Local dev panel for testing, building, and fun Roblox features."})
 InfoTab:CreateParagraph({Title = "Changelog", Content = [[
 v1.2.0:
-- Added Executables and cleaned up a bit.
+- Added Executables
+- Added DeathTP
+- Added Player ESP / Highlight
+- Cleaned up UI and merged Fun/Randomness features
 ]]})
 InfoTab:CreateButton({Name = "Copy Discord Invite", Callback = function() if setclipboard then setclipboard("https://discord.gg/DdPYGZFA") end end})
 InfoTab:CreateButton({Name = "Copy Staff Team Email", Callback = function() if setclipboard then setclipboard("rcestaffteam@gmail.com") end end})
@@ -53,10 +56,10 @@ InfoTab:CreateButton({Name = "Print System Info", Callback = function()
     print("JobId:", game.JobId)
 end})
 
--- 🎬 UNIVERSAL TAB (Merged with Fun/Randomness)
+-- 🎬 UNIVERSAL TAB
 UniversalTab:CreateSection("Movement & Dev Tools")
 
--- Movement & Dev
+-- WalkSpeed & JumpPower
 UniversalTab:CreateSlider({Name = "WalkSpeed", Range = {16,200}, Increment = 1, Suffix = "Speed", CurrentValue = 16, Flag = "WalkSpeedSlider", Callback = function(Value)
     local char = game.Players.LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = Value end
@@ -65,6 +68,8 @@ UniversalTab:CreateSlider({Name = "JumpPower", Range = {50,500}, Increment = 5, 
     local char = game.Players.LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then char.Humanoid.JumpPower = Value end
 end})
+
+-- Noclip
 UniversalTab:CreateToggle({Name = "Noclip (Walk Through Walls)", CurrentValue = false, Flag = "NoclipToggle", Callback = function(Value)
     local char = game.Players.LocalPlayer.Character
     if Value then
@@ -77,11 +82,15 @@ UniversalTab:CreateToggle({Name = "Noclip (Walk Through Walls)", CurrentValue = 
         if _G.NoclipLoop then _G.NoclipLoop:Disconnect() end
     end
 end})
+
+-- Reset Character & Teleport Up
 UniversalTab:CreateButton({Name = "Reset Character", Callback = function() game.Players.LocalPlayer.Character:BreakJoints() end})
 UniversalTab:CreateButton({Name = "Teleport Up", Callback = function()
     local root = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
     root.CFrame = root.CFrame + Vector3.new(0,50,0)
 end})
+
+-- God Mode
 UniversalTab:CreateButton({Name = "God Mode (Humanoid)", Callback = function()
     local char = game.Players.LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
@@ -93,6 +102,8 @@ UniversalTab:CreateButton({Name = "God Mode (Humanoid)", Callback = function()
         clone.Name = "Humanoid"
     end
 end})
+
+-- Fly
 UniversalTab:CreateToggle({Name = "Fly (Hold Space)", CurrentValue = false, Flag = "FlyToggle", Callback = function(Value)
     local player = game.Players.LocalPlayer
     local char = player.Character or player.CharacterAdded:Wait()
@@ -122,6 +133,8 @@ UniversalTab:CreateToggle({Name = "Fly (Hold Space)", CurrentValue = false, Flag
         if bv then bv:Destroy() end
     end
 end})
+
+-- Infinite Jump
 UniversalTab:CreateToggle({Name = "Infinite Jump", CurrentValue = false, Flag = "InfJumpToggle", Callback = function(Value)
     local uis = game:GetService("UserInputService")
     if Value then
@@ -135,6 +148,8 @@ UniversalTab:CreateToggle({Name = "Infinite Jump", CurrentValue = false, Flag = 
         if _G.InfJump then _G.InfJump:Disconnect() end
     end
 end})
+
+-- Sit Anywhere & Rejoin
 UniversalTab:CreateButton({Name = "Sit Anywhere", Callback = function()
     local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     if hum then hum.Sit = true end
@@ -142,56 +157,8 @@ end})
 UniversalTab:CreateButton({Name = "Rejoin Server", Callback = function()
     game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
 end})
-UniversalTab:CreateButton({Name = "Insane Fling (Local)", Callback = function()
-    local player = game.Players.LocalPlayer
-    local mouse = player:GetMouse()
-    local char = player.Character or player.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart")
-    local runService = game:GetService("RunService")
-    local originalCFrame = hrp.CFrame
 
-    local clickConn
-    clickConn = mouse.Button1Down:Connect(function()
-        local target = mouse.Target
-        if not target then return end
-        local targetChar = target:FindFirstAncestorOfClass("Model")
-        if not targetChar or targetChar == char then return end
-        local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
-        if not targetHRP then return end
-
-        clickConn:Disconnect()
-        _G.FlingActive = true
-
-        local spinConn
-        spinConn = runService.RenderStepped:Connect(function(delta)
-            if not _G.FlingActive then return end
-            hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(360/0.01)*delta, 0)
-        end)
-
-        spawn(function()
-            while _G.FlingActive do
-                hrp.CFrame = targetHRP.CFrame
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = false end
-                end
-                runService.RenderStepped:Wait()
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = true end
-                end
-                runService.RenderStepped:Wait()
-            end
-        end)
-
-        delay(4, function()
-            _G.FlingActive = false
-            spinConn:Disconnect()
-            hrp.CFrame = originalCFrame
-        end)
-    end)
-end})
-
--- 🎯 Merged Playground / Fun Features
-UniversalTab:CreateSection("Playground")
+-- 🎯 Playground Fun Features
 UniversalTab:CreateButton({Name = "Spawn Ball", Callback = function()
     local ball = Instance.new("Part")
     ball.Shape = Enum.PartType.Ball
@@ -222,6 +189,8 @@ UniversalTab:CreateButton({Name = "Launch Into Space", Callback = function()
     local rootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
     rootPart.Velocity = Vector3.new(0,200,0)
 end})
+
+-- Rainbow Character
 UniversalTab:CreateToggle({Name = "Rainbow Character", CurrentValue = false, Flag = "RainbowCharToggle", Callback = function(Value)
     if Value then
         _G.RainbowLoop = game:GetService("RunService").RenderStepped:Connect(function()
@@ -235,18 +204,43 @@ UniversalTab:CreateToggle({Name = "Rainbow Character", CurrentValue = false, Fla
         if _G.RainbowLoop then _G.RainbowLoop:Disconnect() end
     end
 end})
--- DeathTP Toggle
+
+-- ✅ DeathTP with respawn-safe handling
 local lastPosition = nil
 local DeathTPEnabled = false
+local deathConn
 
--- Store last position continuously
+-- Track last position
 game:GetService("RunService").Stepped:Connect(function()
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         lastPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
     end
 end)
 
--- Create Toggle in Universal Tab
+local function connectDeath()
+    local player = game.Players.LocalPlayer
+    if not player.Character then return end
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if deathConn then deathConn:Disconnect() end
+        deathConn = hum.Died:Connect(function()
+            wait(0.5)
+            if DeathTPEnabled and lastPosition then
+                local char = player.Character or player.CharacterAdded:Wait()
+                local hrp = char:WaitForChild("HumanoidRootPart")
+                hrp.CFrame = lastPosition
+                print("Teleported back to last position!")
+            end
+        end)
+    end
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if DeathTPEnabled then
+        connectDeath()
+    end
+end)
+
 UniversalTab:CreateToggle({
     Name = "DeathTP",
     CurrentValue = false,
@@ -254,23 +248,69 @@ UniversalTab:CreateToggle({
     Callback = function(Value)
         DeathTPEnabled = Value
         if Value then
-            local player = game.Players.LocalPlayer
-            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if hum then
-                -- Connect to Died signal
-                _G.DeathTPConn = hum.Died:Connect(function()
-                    wait(0.5) -- small delay to ensure respawn
-                    if lastPosition then
-                        local char = player.Character or player.CharacterAdded:Wait()
-                        local hrp = char:WaitForChild("HumanoidRootPart")
-                        hrp.CFrame = lastPosition
-                        print("Teleported back to last position!")
-                    end
-                end)
-            end
+            connectDeath()
         else
-            -- Disconnect the death listener
-            if _G.DeathTPConn then _G.DeathTPConn:Disconnect() end
+            if deathConn then deathConn:Disconnect() end
+        end
+    end
+})
+
+-- 🌟 Player ESP / Highlight
+local ESPEnabled = false
+local ESPConnections = {}
+
+UniversalTab:CreateToggle({
+    Name = "Player ESP",
+    CurrentValue = false,
+    Flag = "ESP",
+    Callback = function(Value)
+        ESPEnabled = Value
+        -- Disconnect previous ESP
+        for _, conn in pairs(ESPConnections) do
+            if conn.Highlight then conn.Highlight:Destroy() end
+            if conn.TextLabel then conn.TextLabel:Destroy() end
+            if conn.Connection then conn.Connection:Disconnect() end
+        end
+        ESPConnections = {}
+
+        if ESPEnabled then
+            for _, plr in pairs(game.Players:GetPlayers()) do
+                if plr ~= game.Players.LocalPlayer then
+                    local char = plr.Character or plr.CharacterAdded:Wait()
+                    local hrp = char:WaitForChild("HumanoidRootPart")
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    
+                    -- Highlight
+                    local highlight = Instance.new("Highlight")
+                    highlight.Adornee = char
+                    highlight.FillColor = Color3.fromRGB(255,0,0)
+                    highlight.OutlineColor = Color3.fromRGB(255,255,255)
+                    highlight.Parent = char
+
+                    -- BillboardGui
+                    local billboard = Instance.new("BillboardGui")
+                    billboard.Size = UDim2.new(0,120,0,50)
+                    billboard.Adornee = hrp
+                    billboard.AlwaysOnTop = true
+                    billboard.StudsOffset = Vector3.new(0, 3, 0) -- ↑ 3 studs above the head
+                    local label = Instance.new("TextLabel")
+                    label.Size = UDim2.new(1,0,1,0)
+                    label.BackgroundTransparency = 1
+                    label.TextScaled = true
+                    label.TextColor3 = Color3.fromRGB(255,255,255)
+                    label.TextStrokeTransparency = 0.5
+                    label.Parent = billboard
+                    billboard.Parent = game.CoreGui
+
+                    -- Update text every frame
+                    local conn
+                    conn = game:GetService("RunService").RenderStepped:Connect(function()
+                        if not char or not hrp or not hum then return end
+                        label.Text = string.format("%s\nHP: %d\n%.1f studs", plr.Name, hum.Health, (hrp.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude)
+                    end)
+                    table.insert(ESPConnections, {Highlight=highlight, TextLabel=label, Connection=conn})
+                end
+            end
         end
     end
 })
@@ -280,6 +320,7 @@ TestTab:CreateSection("List")
 TestTab:CreateButton({Name = "Infinite Yield", Callback = function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
 end})
+
 
 -- WHITELISTED GAMES (Own Tabs)
 local currentPlaceId = game.PlaceId
