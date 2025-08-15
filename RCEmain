@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 -- 🌟 Window
 local Window = Rayfield:CreateWindow({
     Name = "RCE | Rayfield",
-    Icon = 100729310939881, -- your Roblox image asset ID
+    Icon = 100729310939881,
     LoadingTitle = "Loading",
     LoadingSubtitle = "By RCE",
     ShowText = "Rayfield",
@@ -11,16 +11,8 @@ local Window = Rayfield:CreateWindow({
     ToggleUIKeybind = "K",
     DisableRayfieldPrompts = false,
     DisableBuildWarnings = false,
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = nil,
-        FileName = "Big Hub"
-    },
-    Discord = {
-        Enabled = true,
-        Invite = "ddHwwgMB",
-        RememberJoins = true
-    },
+    ConfigurationSaving = { Enabled = true, FolderName = nil, FileName = "Big Hub" },
+    Discord = { Enabled = true, Invite = "ddHwwgMB", RememberJoins = true },
     KeySystem = true,
     KeySettings = {
         Title = "RCE",
@@ -36,8 +28,7 @@ local Window = Rayfield:CreateWindow({
 -- 📂 Tabs
 local InfoTab = Window:CreateTab("Info", 100729310939881)
 local UniversalTab = Window:CreateTab("Universal", 100729310939881)
-local FunTab = Window:CreateTab("Randomness", 100729310939881)
-local SettingsTab = Window:CreateTab("Settings", 100729310939881)
+local TestTab = Window:CreateTab("Executables", 100729310939881)
 
 -- 🛈 INFO TAB
 InfoTab:CreateSection("About")
@@ -45,435 +36,235 @@ InfoTab:CreateLabel("RCE Dev Panel - Version: 1.0.0")
 InfoTab:CreateLabel("Created by: RCE Developers")
 InfoTab:CreateLabel("Powered by: Rayfield UI Library")
 InfoTab:CreateLabel("Discord: https://discord.gg/ddHwwgMB")
-
-InfoTab:CreateParagraph({
-    Title = "Description",
-    Content = "This panel is a local developer tool designed for quick testing, building, and messing around in Roblox Studio. It includes movement mods, fun experimental tools, and customization options."
-})
-
-InfoTab:CreateParagraph({
-    Title = "Changelog",
-    Content = [[
+InfoTab:CreateParagraph({Title = "Description", Content = "Local dev panel for testing, building, and fun Roblox features."})
+InfoTab:CreateParagraph({Title = "Changelog", Content = [[
 v1.0.0:
 - Added Universal tab with WalkSpeed, JumpPower, Noclip, GodMode, Teleport Up, Fly, Infinite Jump, Sit Anywhere, Rejoin Server
-- Added Fun tab with Ball spawner, Platform spawner, Launch into space, Rainbow mode
+- Added merged Fun/Randomness features into Universal tab
 - Added Info tab with version, credits, and changelog
-    ]]
-})
+]]})
+InfoTab:CreateButton({Name = "Copy Discord Invite", Callback = function() if setclipboard then setclipboard("https://discord.gg/DdPYGZFA") end end})
+InfoTab:CreateButton({Name = "Copy Staff Team Email", Callback = function() if setclipboard then setclipboard("rcestaffteam@gmail.com") end end})
+InfoTab:CreateButton({Name = "Print System Info", Callback = function()
+    local player = game.Players.LocalPlayer
+    print("Username:", player.Name)
+    print("Display Name:", player.DisplayName)
+    print("UserId:", player.UserId)
+    print("Game Name:", game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
+    print("PlaceId:", game.PlaceId)
+    print("JobId:", game.JobId)
+end})
 
-InfoTab:CreateButton({
-    Name = "Copy Discord Invite",
-    Callback = function()
-        if setclipboard then
-            setclipboard("https://discord.gg/DdPYGZFA")
-            print("Discord invite copied to clipboard!")
-        else
-            print("Clipboard not supported in this environment.")
-        end
-    end
-})
-
-InfoTab:CreateButton({
-    Name = "Copy Staff Team Email",
-    Callback = function()
-        if setclipboard then
-            setclipboard("rcestaffteam@gmail.com")
-            print("RCE staff team copied to clipboard!")
-        else
-            print("Clipboard not supported in this environment.")
-        end
-    end
-})
-
-InfoTab:CreateButton({
-    Name = "Print System Info",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        print("Username:", player.Name)
-        print("Display Name:", player.DisplayName)
-        print("UserId:", player.UserId)
-        print("Game Name:", game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
-        print("PlaceId:", game.PlaceId)
-        print("JobId:", game.JobId)
-    end
-})
-
--- 🎬 UNIVERSAL TAB
+-- 🎬 UNIVERSAL TAB (Merged with Fun/Randomness)
 UniversalTab:CreateSection("Movement & Dev Tools")
 
--- WalkSpeed
-UniversalTab:CreateSlider({
-    Name = "WalkSpeed",
-    Range = {16, 200},
-    Increment = 1,
-    Suffix = "Speed",
-    CurrentValue = 16,
-    Flag = "WalkSpeedSlider",
-    Callback = function(Value)
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = Value
-        end
-    end
-})
-
--- JumpPower
-UniversalTab:CreateSlider({
-    Name = "JumpPower",
-    Range = {50, 500},
-    Increment = 5,
-    Suffix = "Power",
-    CurrentValue = 50,
-    Flag = "JumpPowerSlider",
-    Callback = function(Value)
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.JumpPower = Value
-        end
-    end
-})
-
--- Noclip
-UniversalTab:CreateToggle({
-    Name = "Noclip (Walk Through Walls)",
-    CurrentValue = false,
-    Flag = "NoclipToggle",
-    Callback = function(Value)
-        local char = game.Players.LocalPlayer.Character
-        if Value then
-            _G.NoclipLoop = game:GetService("RunService").Stepped:Connect(function()
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
-                end
-            end)
-        else
-            if _G.NoclipLoop then
-                _G.NoclipLoop:Disconnect()
+-- Movement & Dev
+UniversalTab:CreateSlider({Name = "WalkSpeed", Range = {16,200}, Increment = 1, Suffix = "Speed", CurrentValue = 16, Flag = "WalkSpeedSlider", Callback = function(Value)
+    local char = game.Players.LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = Value end
+end})
+UniversalTab:CreateSlider({Name = "JumpPower", Range = {50,500}, Increment = 5, Suffix = "Power", CurrentValue = 50, Flag = "JumpPowerSlider", Callback = function(Value)
+    local char = game.Players.LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then char.Humanoid.JumpPower = Value end
+end})
+UniversalTab:CreateToggle({Name = "Noclip (Walk Through Walls)", CurrentValue = false, Flag = "NoclipToggle", Callback = function(Value)
+    local char = game.Players.LocalPlayer.Character
+    if Value then
+        _G.NoclipLoop = game:GetService("RunService").Stepped:Connect(function()
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
             end
-        end
-    end
-})
-
--- Reset Character
-UniversalTab:CreateButton({
-    Name = "Reset Character",
-    Callback = function()
-        game.Players.LocalPlayer.Character:BreakJoints()
-    end
-})
-
--- Teleport Up
-UniversalTab:CreateButton({
-    Name = "Teleport Up",
-    Callback = function()
-        local rootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-        rootPart.CFrame = rootPart.CFrame + Vector3.new(0, 50, 0)
-    end
-})
-
--- God Mode
-UniversalTab:CreateButton({
-    Name = "God Mode (Humanoid)",
-    Callback = function()
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.Name = "1"
-            local clone = char.Humanoid:Clone()
-            clone.Parent = char
-            wait()
-            char["1"]:Destroy()
-            clone.Name = "Humanoid"
-            print("God mode applied")
-        end
-    end
-})
-
--- Fly
-UniversalTab:CreateToggle({
-    Name = "Fly (Hold Space)",
-    CurrentValue = false,
-    Flag = "FlyToggle",
-    Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local uis = game:GetService("UserInputService")
-        local rs = game:GetService("RunService")
-        local root = char:WaitForChild("HumanoidRootPart")
-
-        if Value then
-            _G.Fly = true
-            local bv = Instance.new("BodyVelocity")
-            bv.Velocity = Vector3.new(0,0,0)
-            bv.MaxForce = Vector3.new(0,0,0)
-            bv.Parent = root
-
-            _G.FlyConn = rs.RenderStepped:Connect(function()
-                if uis:IsKeyDown(Enum.KeyCode.Space) then
-                    bv.MaxForce = Vector3.new(4000,4000,4000)
-                    bv.Velocity = root.CFrame.UpVector * 50
-                else
-                    bv.MaxForce = Vector3.new(0,0,0)
-                end
-            end)
-        else
-            _G.Fly = false
-            if _G.FlyConn then _G.FlyConn:Disconnect() end
-            local bv = root:FindFirstChildOfClass("BodyVelocity")
-            if bv then bv:Destroy() end
-        end
-    end
-})
-
--- Infinite Jump
-UniversalTab:CreateToggle({
-    Name = "Infinite Jump",
-    CurrentValue = false,
-    Flag = "InfJumpToggle",
-    Callback = function(Value)
-        local uis = game:GetService("UserInputService")
-        if Value then
-            _G.InfJump = uis.JumpRequest:Connect(function()
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChildOfClass("Humanoid") then
-                    char:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-                end
-            end)
-        else
-            if _G.InfJump then _G.InfJump:Disconnect() end
-        end
-    end
-})
-
--- Sit Anywhere
-UniversalTab:CreateButton({
-    Name = "Sit Anywhere",
-    Callback = function()
-        local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if hum then hum.Sit = true end
-    end
-})
-
--- Rejoin Server
-UniversalTab:CreateButton({
-    Name = "Rejoin Server",
-    Callback = function()
-        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-    end
-})
-UniversalTab:CreateButton({
-    Name = "Insane Fling (Local)",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local mouse = player:GetMouse()
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-        local runService = game:GetService("RunService")
-        local originalCFrame = hrp.CFrame
-
-        local clickConn
-        clickConn = mouse.Button1Down:Connect(function()
-            local target = mouse.Target
-            if not target then return end
-            local targetChar = target:FindFirstAncestorOfClass("Model")
-            if not targetChar or targetChar == char then return end
-            local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
-            if not targetHRP then return end
-
-            clickConn:Disconnect()
-            _G.FlingActive = true
-
-            -- Spin insanely fast
-            local spinConn
-            spinConn = runService.RenderStepped:Connect(function(delta)
-                if not _G.FlingActive then return end
-                hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(360/0.01)*delta, 0)
-            end)
-
-            -- Constant teleport + collisions flash
-            spawn(function()
-                while _G.FlingActive do
-                    -- Teleport to target
-                    hrp.CFrame = targetHRP.CFrame
-
-                    -- Flash collisions
-                    for _, part in ipairs(char:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
-                    end
-                    runService.RenderStepped:Wait()
-                    for _, part in ipairs(char:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = true
-                        end
-                    end
-                    runService.RenderStepped:Wait()
-                end
-            end)
-
-            -- Stop after 4 seconds and return
-            delay(4, function()
-                _G.FlingActive = false
-                spinConn:Disconnect()
-                hrp.CFrame = originalCFrame
-            end)
         end)
+    else
+        if _G.NoclipLoop then _G.NoclipLoop:Disconnect() end
     end
-})
-
-
-
-
-
-
--- 🎯 FUN TAB
-FunTab:CreateSection("Playground")
-
-FunTab:CreateButton({
-    Name = "Spawn Ball",
-    Callback = function()
-        local ball = Instance.new("Part")
-        ball.Shape = Enum.PartType.Ball
-        ball.Size = Vector3.new(3, 3, 3)
-        ball.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
-        ball.Anchored = false
-        ball.Material = Enum.Material.Neon
-        ball.Color = Color3.fromRGB(0, 255, 255)
-        ball.Parent = workspace
+end})
+UniversalTab:CreateButton({Name = "Reset Character", Callback = function() game.Players.LocalPlayer.Character:BreakJoints() end})
+UniversalTab:CreateButton({Name = "Teleport Up", Callback = function()
+    local root = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+    root.CFrame = root.CFrame + Vector3.new(0,50,0)
+end})
+UniversalTab:CreateButton({Name = "God Mode (Humanoid)", Callback = function()
+    local char = game.Players.LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.Name = "1"
+        local clone = char.Humanoid:Clone()
+        clone.Parent = char
+        wait()
+        char["1"]:Destroy()
+        clone.Name = "Humanoid"
     end
-})
+end})
+UniversalTab:CreateToggle({Name = "Fly (Hold Space)", CurrentValue = false, Flag = "FlyToggle", Callback = function(Value)
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local uis = game:GetService("UserInputService")
+    local rs = game:GetService("RunService")
+    local root = char:WaitForChild("HumanoidRootPart")
 
-FunTab:CreateButton({
-    Name = "Spawn Platform",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local rootPart = char:WaitForChild("HumanoidRootPart")
+    if Value then
+        _G.Fly = true
+        local bv = Instance.new("BodyVelocity")
+        bv.Velocity = Vector3.new(0,0,0)
+        bv.MaxForce = Vector3.new(0,0,0)
+        bv.Parent = root
 
-        local platform = Instance.new("Part")
-        platform.Name = "CustomPlatform"
-        platform.Size = Vector3.new(6, 1, 6)
-        platform.Position = rootPart.Position - Vector3.new(0, (rootPart.Size.Y / 2) + (platform.Size.Y / 2), 0)
-        platform.Anchored = true
-        platform.Color = Color3.fromRGB(255, 200, 50)
-        platform.Material = Enum.Material.Neon
-        platform.TopSurface = Enum.SurfaceType.Smooth
-        platform.BottomSurface = Enum.SurfaceType.Smooth
-        platform.Parent = workspace
+        _G.FlyConn = rs.RenderStepped:Connect(function()
+            if uis:IsKeyDown(Enum.KeyCode.Space) then
+                bv.MaxForce = Vector3.new(4000,4000,4000)
+                bv.Velocity = root.CFrame.UpVector * 50
+            else
+                bv.MaxForce = Vector3.new(0,0,0)
+            end
+        end)
+    else
+        _G.Fly = false
+        if _G.FlyConn then _G.FlyConn:Disconnect() end
+        local bv = root:FindFirstChildOfClass("BodyVelocity")
+        if bv then bv:Destroy() end
     end
-})
-
-FunTab:CreateButton({
-    Name = "Launch Into Space",
-    Callback = function()
-        local rootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-        rootPart.Velocity = Vector3.new(0, 200, 0)
+end})
+UniversalTab:CreateToggle({Name = "Infinite Jump", CurrentValue = false, Flag = "InfJumpToggle", Callback = function(Value)
+    local uis = game:GetService("UserInputService")
+    if Value then
+        _G.InfJump = uis.JumpRequest:Connect(function()
+            local char = game.Players.LocalPlayer.Character
+            if char and char:FindFirstChildOfClass("Humanoid") then
+                char:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+            end
+        end)
+    else
+        if _G.InfJump then _G.InfJump:Disconnect() end
     end
-})
+end})
+UniversalTab:CreateButton({Name = "Sit Anywhere", Callback = function()
+    local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.Sit = true end
+end})
+UniversalTab:CreateButton({Name = "Rejoin Server", Callback = function()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+end})
+UniversalTab:CreateButton({Name = "Insane Fling (Local)", Callback = function()
+    local player = game.Players.LocalPlayer
+    local mouse = player:GetMouse()
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local runService = game:GetService("RunService")
+    local originalCFrame = hrp.CFrame
 
-FunTab:CreateToggle({
-    Name = "Rainbow Character",
-    CurrentValue = false,
-    Flag = "RainbowCharToggle",
-    Callback = function(Value)
-        if Value then
-            _G.RainbowLoop = game:GetService("RunService").RenderStepped:Connect(function()
-                for _, part in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        part.Color = Color3.fromHSV(tick() % 5 / 5, 1, 1)
-                    end
+    local clickConn
+    clickConn = mouse.Button1Down:Connect(function()
+        local target = mouse.Target
+        if not target then return end
+        local targetChar = target:FindFirstAncestorOfClass("Model")
+        if not targetChar or targetChar == char then return end
+        local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+        if not targetHRP then return end
+
+        clickConn:Disconnect()
+        _G.FlingActive = true
+
+        local spinConn
+        spinConn = runService.RenderStepped:Connect(function(delta)
+            if not _G.FlingActive then return end
+            hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(360/0.01)*delta, 0)
+        end)
+
+        spawn(function()
+            while _G.FlingActive do
+                hrp.CFrame = targetHRP.CFrame
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
                 end
-            end)
-        else
-            if _G.RainbowLoop then _G.RainbowLoop:Disconnect() end
-        end
+                runService.RenderStepped:Wait()
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = true end
+                end
+                runService.RenderStepped:Wait()
+            end
+        end)
+
+        delay(4, function()
+            _G.FlingActive = false
+            spinConn:Disconnect()
+            hrp.CFrame = originalCFrame
+        end)
+    end)
+end})
+
+-- 🎯 Merged Playground / Fun Features
+UniversalTab:CreateSection("Playground")
+UniversalTab:CreateButton({Name = "Spawn Ball", Callback = function()
+    local ball = Instance.new("Part")
+    ball.Shape = Enum.PartType.Ball
+    ball.Size = Vector3.new(3,3,3)
+    ball.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,5,0)
+    ball.Anchored = false
+    ball.Material = Enum.Material.Neon
+    ball.Color = Color3.fromRGB(0,255,255)
+    ball.Parent = workspace
+end})
+UniversalTab:CreateButton({Name = "Spawn Platform", Callback = function()
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local rootPart = char:WaitForChild("HumanoidRootPart")
+
+    local platform = Instance.new("Part")
+    platform.Name = "CustomPlatform"
+    platform.Size = Vector3.new(6,1,6)
+    platform.Position = rootPart.Position - Vector3.new(0,(rootPart.Size.Y/2) + (platform.Size.Y/2),0)
+    platform.Anchored = true
+    platform.Color = Color3.fromRGB(255,200,50)
+    platform.Material = Enum.Material.Neon
+    platform.TopSurface = Enum.SurfaceType.Smooth
+    platform.BottomSurface = Enum.SurfaceType.Smooth
+    platform.Parent = workspace
+end})
+UniversalTab:CreateButton({Name = "Launch Into Space", Callback = function()
+    local rootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+    rootPart.Velocity = Vector3.new(0,200,0)
+end})
+UniversalTab:CreateToggle({Name = "Rainbow Character", CurrentValue = false, Flag = "RainbowCharToggle", Callback = function(Value)
+    if Value then
+        _G.RainbowLoop = game:GetService("RunService").RenderStepped:Connect(function()
+            for _, part in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.Color = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+                end
+            end
+        end)
+    else
+        if _G.RainbowLoop then _G.RainbowLoop:Disconnect() end
     end
-})
-
--- ⚙️ SETTINGS TAB
-SettingsTab:CreateSection("UI Settings")
-
-SettingsTab:CreateKeybind({
-    Name = "Toggle UI",
-    CurrentKeybind = "K",
-    HoldToInteract = false,
-    Flag = "ToggleUIBind",
-    Callback = function()
-        Rayfield:ToggleUI()
-    end
-})
-
-SettingsTab:CreateColorPicker({
-    Name = "Theme Color",
-    Color = Color3.fromRGB(255, 170, 0),
-    Flag = "ThemeColorPicker",
-    Callback = function(Color)
-        print("Selected color:", Color)
-    end
-})
-
+end})
 
 -- 📂 Test Objects Tab
-local TestTab = Window:CreateTab("Test Objects", 100729310939881) -- you can use your icon ID
+TestTab:CreateSection("List")
+TestTab:CreateButton({Name = "Infinite Yield", Callback = function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+end})
 
-TestTab:CreateSection("Executables")
-
-TestTab:CreateButton({
-    Name = "Infinite Yield",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
-    end
-})
-
-
-
-
---WHITELISTED GAMES 
-
+-- WHITELISTED GAMES (Own Tabs)
 local currentPlaceId = game.PlaceId
 
--- 17574618959
 if currentPlaceId == 17574618959 then
-    local BaseplateTab = Window:CreateTab("Just a Baseplate", 100729310939881) -- new tab
-    BaseplateTab:CreateButton({
-        Name = "Button for Just a Baseplate",
-        Callback = function()
-            print("You are in Just a Baseplate!")
-        end
-    })
-
--- 12341234
+    local BaseplateTab = Window:CreateTab("Just a Baseplate", 100729310939881)
+    BaseplateTab:CreateButton({Name = "Button for Just a Baseplate", Callback = function()
+        print("You are in Just a Baseplate!")
+    end})
 elseif currentPlaceId == 12341234 then
     local Section123Tab = Window:CreateTab("Section 12341234", 100729310939881)
-    Section123Tab:CreateButton({
-        Name = "Button for Section 12341234",
-        Callback = function()
-            print("You are in Section 12341234!")
-        end
-    })
-
--- 141356
+    Section123Tab:CreateButton({Name = "Button for Section 12341234", Callback = function()
+        print("You are in Section 12341234!")
+    end})
 elseif currentPlaceId == 141356 then
     local Section141Tab = Window:CreateTab("Section 141356", 100729310939881)
-    Section141Tab:CreateButton({
-        Name = "Button for Section 141356",
-        Callback = function()
-            print("You are in Section 141356!")
-        end
-    })
-
--- Not whitelisted
+    Section141Tab:CreateButton({Name = "Button for Section 141356", Callback = function()
+        print("You are in Section 141356!")
+    end})
 else
     local NotAllowedTab = Window:CreateTab("Not an allowed game", 100729310939881)
-    NotAllowedTab:CreateButton({
-        Name = "Info",
-        Callback = function()
-            print("This game is not whitelisted!")
-        end
-    })
+    NotAllowedTab:CreateButton({Name = "Info", Callback = function()
+        print("This game is not whitelisted!")
+    end})
 end
-
-
-
