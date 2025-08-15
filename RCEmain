@@ -33,10 +33,10 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- 📂 Tabs
-local InfoTab = Window:CreateTab("Info", 108127592774922)
-local UniversalTab = Window:CreateTab("Universal", 108127592774922)
-local FunTab = Window:CreateTab("Randomness", 108127592774922)
-local SettingsTab = Window:CreateTab("Settings", 108127592774922)
+local InfoTab = Window:CreateTab("Info", 100729310939881)
+local UniversalTab = Window:CreateTab("Universal", 100729310939881)
+local FunTab = Window:CreateTab("Randomness", 100729310939881)
+local SettingsTab = Window:CreateTab("Settings", 100729310939881)
 
 -- 🛈 INFO TAB
 InfoTab:CreateSection("About")
