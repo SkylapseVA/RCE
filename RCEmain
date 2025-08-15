@@ -32,16 +32,14 @@ local TestTab = Window:CreateTab("Executables", 100729310939881)
 
 -- 🛈 INFO TAB
 InfoTab:CreateSection("About")
-InfoTab:CreateLabel("RCE Dev Panel - Version: 1.0.0")
+InfoTab:CreateLabel("RCE Dev Panel - Version: 1.2.0")
 InfoTab:CreateLabel("Created by: RCE Developers")
 InfoTab:CreateLabel("Powered by: Rayfield UI Library")
 InfoTab:CreateLabel("Discord: https://discord.gg/ddHwwgMB")
 InfoTab:CreateParagraph({Title = "Description", Content = "Local dev panel for testing, building, and fun Roblox features."})
 InfoTab:CreateParagraph({Title = "Changelog", Content = [[
-v1.0.0:
-- Added Universal tab with WalkSpeed, JumpPower, Noclip, GodMode, Teleport Up, Fly, Infinite Jump, Sit Anywhere, Rejoin Server
-- Added merged Fun/Randomness features into Universal tab
-- Added Info tab with version, credits, and changelog
+v1.2.0:
+- Added Executables and cleaned up a bit.
 ]]})
 InfoTab:CreateButton({Name = "Copy Discord Invite", Callback = function() if setclipboard then setclipboard("https://discord.gg/DdPYGZFA") end end})
 InfoTab:CreateButton({Name = "Copy Staff Team Email", Callback = function() if setclipboard then setclipboard("rcestaffteam@gmail.com") end end})
@@ -237,6 +235,45 @@ UniversalTab:CreateToggle({Name = "Rainbow Character", CurrentValue = false, Fla
         if _G.RainbowLoop then _G.RainbowLoop:Disconnect() end
     end
 end})
+-- DeathTP Toggle
+local lastPosition = nil
+local DeathTPEnabled = false
+
+-- Store last position continuously
+game:GetService("RunService").Stepped:Connect(function()
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        lastPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    end
+end)
+
+-- Create Toggle in Universal Tab
+UniversalTab:CreateToggle({
+    Name = "DeathTP",
+    CurrentValue = false,
+    Flag = "DeathTPToggle",
+    Callback = function(Value)
+        DeathTPEnabled = Value
+        if Value then
+            local player = game.Players.LocalPlayer
+            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                -- Connect to Died signal
+                _G.DeathTPConn = hum.Died:Connect(function()
+                    wait(0.5) -- small delay to ensure respawn
+                    if lastPosition then
+                        local char = player.Character or player.CharacterAdded:Wait()
+                        local hrp = char:WaitForChild("HumanoidRootPart")
+                        hrp.CFrame = lastPosition
+                        print("Teleported back to last position!")
+                    end
+                end)
+            end
+        else
+            -- Disconnect the death listener
+            if _G.DeathTPConn then _G.DeathTPConn:Disconnect() end
+        end
+    end
+})
 
 -- 📂 Test Objects Tab
 TestTab:CreateSection("List")
