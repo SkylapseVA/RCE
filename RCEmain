@@ -433,41 +433,41 @@ TestTab:CreateButton({
 
 
 -- funny script to make whitelisted games appear so haha
--- List of whitelisted game IDs
-local WhitelistedGames = {
-    [17574618959] = "Just a Baseplate",
-    [12341234] = "Section 12341234",
-    [141356] = "Section 141356"
-}
-
--- Check current game
 local currentPlaceId = game.PlaceId
 
--- Only create buttons if in a whitelisted game
+-- 17574618959
 if currentPlaceId == 17574618959 then
+    UniversalTab:CreateSection("Just a Baseplate")
     UniversalTab:CreateButton({
-        Name = "Baseplate Button",
+        Name = "Button for Just a Baseplate",
         Callback = function()
-            print("This button only appears in Just a Baseplate!")
-            -- You can add any code here specific to this game
+            print("You are in Just a Baseplate!")
         end
     })
+
+-- 12341234
 elseif currentPlaceId == 12341234 then
+    UniversalTab:CreateSection("Section 12341234")
     UniversalTab:CreateButton({
-        Name = "Button for 12341234",
+        Name = "Button for Section 12341234",
         Callback = function()
-            print("This button only appears in 12341234!")
+            print("You are in Section 12341234!")
         end
     })
+
+-- 141356
 elseif currentPlaceId == 141356 then
+    UniversalTab:CreateSection("Section 141356")
     UniversalTab:CreateButton({
-        Name = "Button for 141356",
+        Name = "Button for Section 141356",
         Callback = function()
-            print("This button only appears in 141356!")
+            print("You are in Section 141356!")
         end
     })
+
+-- Not whitelisted
 else
-    UniversalTab:CreateSection("Not an allowed game") -- Section appears with this text
+    -- Nothing appears
 end
 
 
