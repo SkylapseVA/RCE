@@ -17,7 +17,7 @@ local Window = Rayfield:CreateWindow({
     },
     Discord = {
         Enabled = true,
-        Invite = "DdPYGZFA",
+        Invite = "ddHwwgMB",
         RememberJoins = true
     },
     KeySystem = true,
@@ -44,7 +44,7 @@ InfoTab:CreateSection("About")
 InfoTab:CreateLabel("RCE Dev Panel - Version: 1.0.0")
 InfoTab:CreateLabel("Created by: RCE Developers")
 InfoTab:CreateLabel("Powered by: Rayfield UI Library")
-InfoTab:CreateLabel("Discord: discord.gg/DdPYGZFA")
+InfoTab:CreateLabel("Discord: https://discord.gg/ddHwwgMB")
 
 InfoTab:CreateParagraph({
     Title = "Description",
@@ -67,6 +67,18 @@ InfoTab:CreateButton({
         if setclipboard then
             setclipboard("https://discord.gg/DdPYGZFA")
             print("Discord invite copied to clipboard!")
+        else
+            print("Clipboard not supported in this environment.")
+        end
+    end
+})
+
+InfoTab:CreateButton({
+    Name = "Copy Staff Team Email",
+    Callback = function()
+        if setclipboard then
+            setclipboard("rcestaffteam@gmail.com")
+            print("RCE staff tean copied to ClipBoard!")
         else
             print("Clipboard not supported in this environment.")
         end
