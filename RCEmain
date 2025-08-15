@@ -413,3 +413,16 @@ SettingsTab:CreateColorPicker({
         print("Selected color:", Color)
     end
 })
+
+
+-- 📂 Test Objects Tab
+local TestTab = Window:CreateTab("Test Objects", 100729310939881) -- you can use your icon ID
+
+TestTab:CreateSection("Executables")
+
+TestTab:CreateButton({
+    Name = "Infinite Yield",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+    end
+})
