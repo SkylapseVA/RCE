@@ -1,38 +1,117 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "[[RCE]]",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "RCE [Ty Rayfield]",
-   LoadingSubtitle = "By RCE",
-   ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "AmberGlow", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+    Name = "[[RCE]]",
+    Icon = 0,
+    LoadingTitle = "RCE [Ty Rayfield]",
+    LoadingSubtitle = "By RCE",
+    ShowText = "Rayfield",
+    Theme = "AmberGlow",
+    ToggleUIKeybind = "K",
+    DisableRayfieldPrompts = false,
+    DisableBuildWarnings = false,
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "Big Hub"
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "DdPYGZFA",
+        RememberJoins = true
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "RCE",
+        Subtitle = "Key System",
+        Note = "Join our discord for a one time code! [ May change often. ]",
+        FileName = "IvagJgaweT",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = {"CurrentlyNew"}
+    }
+})
 
-   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+-- 📂 Example Tabs
+local MainTab = Window:CreateTab("Main Features", 4483362458) -- Roblox asset ID for icon
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
+local FunTab = Window:CreateTab("Fun Stuff", 4483362458)
 
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+-- 📝 Main Features
+MainTab:CreateSection("Controls")
 
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
-   },
+MainTab:CreateButton({
+    Name = "Print Hello",
+    Callback = function()
+        print("Hello from Rayfield!")
+    end
+})
 
-   Discord = {
-      Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "DdPYGZFA", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
+MainTab:CreateToggle({
+    Name = "Enable Part Spawner",
+    CurrentValue = false,
+    Flag = "PartSpawnerToggle",
+    Callback = function(Value)
+        print("Part Spawner: " .. tostring(Value))
+    end
+})
 
-   KeySystem = true, -- Set this to true to use our key system
-   KeySettings = {
-      Title = "RCE",
-      Subtitle = "Key System",
-      Note = "Join our discord for a one time code! [ May change often. ]", -- Use this to tell the user how to get a key
-      FileName = "IvagJgaweT", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"CurrentlyNew"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
+MainTab:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 16,
+    Flag = "WalkSpeedSlider",
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+    end
+})
+
+MainTab:CreateDropdown({
+    Name = "Select Team",
+    Options = {"Red", "Blue", "Green"},
+    CurrentOption = {"Red"},
+    MultipleOptions = false,
+    Flag = "TeamDropdown",
+    Callback = function(Option)
+        print("Selected Team:", Option[1])
+    end
+})
+
+-- ⚙️ Settings Tab
+SettingsTab:CreateSection("UI Settings")
+
+SettingsTab:CreateKeybind({
+    Name = "Toggle UI",
+    CurrentKeybind = "K",
+    HoldToInteract = false,
+    Flag = "ToggleUIBind",
+    Callback = function(Keybind)
+        Rayfield:ToggleUI()
+    end
+})
+
+SettingsTab:CreateColorPicker({
+    Name = "Theme Color",
+    Color = Color3.fromRGB(255, 170, 0),
+    Flag = "ThemeColorPicker",
+    Callback = function(Color)
+        print("Selected color:", Color)
+    end
+})
+
+-- 🎯 Fun Stuff
+FunTab:CreateSection("Playground")
+
+FunTab:CreateButton({
+    Name = "Spawn Ball",
+    Callback = function()
+        local ball = Instance.new("Part")
+        ball.Shape = Enum.PartType.Ball
+        ball.Size = Vector3.new(3, 3, 3)
+        ball.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
+        ball.Anchored = false
+        ball.Parent = workspace
+    end
 })
