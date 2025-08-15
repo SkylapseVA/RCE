@@ -32,33 +32,17 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- 📂 Example Tabs
-local MainTab = Window:CreateTab("Main Features", 108127592774922) -- Roblox asset ID for icon
+-- 📂 Tabs
+local UniversalTab = Window:CreateTab("Universal", 108127592774922) -- OP local stuff
+local FunTab = Window:CreateTab("Randomness", 108127592774922)
 local SettingsTab = Window:CreateTab("Settings", 108127592774922)
-local FunTab = Window:CreateTab("Fun Stuff", 108127592774922)
 
--- 📝 Main Features
-MainTab:CreateSection("Controls")
+-- 🎬 UNIVERSAL (Dev Tools)
+UniversalTab:CreateSection("Movement")
 
-MainTab:CreateButton({
-    Name = "Print Hello",
-    Callback = function()
-        print("Hello from Rayfield!")
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Enable Part Spawner",
-    CurrentValue = false,
-    Flag = "PartSpawnerToggle",
-    Callback = function(Value)
-        print("Part Spawner: " .. tostring(Value))
-    end
-})
-
-MainTab:CreateSlider({
+UniversalTab:CreateSlider({
     Name = "WalkSpeed",
-    Range = {16, 100},
+    Range = {16, 200},
     Increment = 1,
     Suffix = "Speed",
     CurrentValue = 16,
@@ -68,18 +52,138 @@ MainTab:CreateSlider({
     end
 })
 
-MainTab:CreateDropdown({
-    Name = "Select Team",
-    Options = {"Red", "Blue", "Green"},
-    CurrentOption = {"Red"},
-    MultipleOptions = false,
-    Flag = "TeamDropdown",
-    Callback = function(Option)
-        print("Selected Team:", Option[1])
+UniversalTab:CreateSlider({
+    Name = "JumpPower",
+    Range = {50, 500},
+    Increment = 5,
+    Suffix = "Power",
+    CurrentValue = 50,
+    Flag = "JumpPowerSlider",
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
     end
 })
 
--- ⚙️ Settings Tab
+UniversalTab:CreateToggle({
+    Name = "Noclip (Walk Through Walls)",
+    CurrentValue = false,
+    Flag = "NoclipToggle",
+    Callback = function(Value)
+        local char = game.Players.LocalPlayer.Character
+        if Value then
+            _G.NoclipLoop = game:GetService("RunService").Stepped:Connect(function()
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end)
+        else
+            if _G.NoclipLoop then
+                _G.NoclipLoop:Disconnect()
+            end
+        end
+    end
+})
+
+UniversalTab:CreateButton({
+    Name = "Reset Character",
+    Callback = function()
+        game.Players.LocalPlayer.Character:BreakJoints()
+    end
+})
+
+UniversalTab:CreateButton({
+    Name = "Teleport Up",
+    Callback = function()
+        local rootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        rootPart.CFrame = rootPart.CFrame + Vector3.new(0, 50, 0)
+    end
+})
+
+UniversalTab:CreateButton({
+    Name = "God Mode (Humanoid)",
+    Callback = function()
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.Name = "1"
+            local clone = char.Humanoid:Clone()
+            clone.Parent = char
+            wait()
+            char["1"]:Destroy()
+            clone.Name = "Humanoid"
+            print("God mode applied")
+        end
+    end
+})
+
+-- 🎯 FUN STUFF
+FunTab:CreateSection("Playground")
+
+FunTab:CreateButton({
+    Name = "Spawn Ball",
+    Callback = function()
+        local ball = Instance.new("Part")
+        ball.Shape = Enum.PartType.Ball
+        ball.Size = Vector3.new(3, 3, 3)
+        ball.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
+        ball.Anchored = false
+        ball.Material = Enum.Material.Neon
+        ball.Color = Color3.fromRGB(0, 255, 255)
+        ball.Parent = workspace
+    end
+})
+
+FunTab:CreateButton({
+    Name = "Spawn Platform",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local rootPart = char:WaitForChild("HumanoidRootPart")
+
+        local platform = Instance.new("Part")
+        platform.Name = "CustomPlatform"
+        platform.Size = Vector3.new(6, 1, 6)
+        platform.Position = rootPart.Position - Vector3.new(0, (rootPart.Size.Y / 2) + (platform.Size.Y / 2), 0)
+        platform.Anchored = true
+        platform.Color = Color3.fromRGB(255, 200, 50)
+        platform.Material = Enum.Material.Neon
+        platform.TopSurface = Enum.SurfaceType.Smooth
+        platform.BottomSurface = Enum.SurfaceType.Smooth
+        platform.Parent = workspace
+    end
+})
+
+FunTab:CreateButton({
+    Name = "Launch Into Space",
+    Callback = function()
+        local rootPart = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        rootPart.Velocity = Vector3.new(0, 200, 0)
+    end
+})
+
+FunTab:CreateToggle({
+    Name = "Rainbow Character",
+    CurrentValue = false,
+    Flag = "RainbowCharToggle",
+    Callback = function(Value)
+        if Value then
+            _G.RainbowLoop = game:GetService("RunService").RenderStepped:Connect(function()
+                for _, part in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.Color = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+                    end
+                end
+            end)
+        else
+            if _G.RainbowLoop then
+                _G.RainbowLoop:Disconnect()
+            end
+        end
+    end
+})
+
+-- ⚙️ SETTINGS
 SettingsTab:CreateSection("UI Settings")
 
 SettingsTab:CreateKeybind({
@@ -98,20 +202,5 @@ SettingsTab:CreateColorPicker({
     Flag = "ThemeColorPicker",
     Callback = function(Color)
         print("Selected color:", Color)
-    end
-})
-
--- 🎯 Fun Stuff
-FunTab:CreateSection("Playground")
-
-FunTab:CreateButton({
-    Name = "Spawn Ball",
-    Callback = function()
-        local ball = Instance.new("Part")
-        ball.Shape = Enum.PartType.Ball
-        ball.Size = Vector3.new(3, 3, 3)
-        ball.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
-        ball.Anchored = false
-        ball.Parent = workspace
     end
 })
