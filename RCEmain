@@ -263,69 +263,45 @@ UniversalTab:CreateButton({
     end
 })
 UniversalTab:CreateButton({
-    Name = "Give Fling Tool",
+    Name = "Fling Player Tool",
     Callback = function()
         local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local backpack = player:WaitForChild("Backpack")
+        local mouse = player:GetMouse()
+        local char = player.Character
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        local originalCFrame = hrp.CFrame
 
-        -- create tool
-        local tool = Instance.new("Tool")
-        tool.Name = "PlayerFlinger"
-        tool.RequiresHandle = false
-        tool.Parent = backpack
+        local clickConn
+        clickConn = mouse.Button1Down:Connect(function()
+            local target = mouse.Target
+            if not target then return end
+            local targetChar = target:FindFirstAncestorOfClass("Model")
+            if not targetChar or targetChar == char then return end
+            local targetHum = targetChar:FindFirstChildOfClass("Humanoid")
+            local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+            if not targetHum or not targetHRP then return end
 
-        tool.Activated:Connect(function()
-            local mouse = player:GetMouse()
-            local originalCFrame = char:WaitForChild("HumanoidRootPart").CFrame
+            clickConn:Disconnect()
 
-            print("Click a player to fling...")
+            -- Move yourself to target and attach using AlignPosition & AlignOrientation
+            hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0) -- above target
 
-            local clickConn
-            clickConn = mouse.Button1Down:Connect(function()
-                local target = mouse.Target
-                if target and target.Parent then
-                    local targetHum = target.Parent:FindFirstChildOfClass("Humanoid")
-                    local targetRoot = target.Parent:FindFirstChild("HumanoidRootPart")
-                    if targetHum and targetRoot and target.Parent ~= char then
-                        clickConn:Disconnect()
+            -- Spinning insanely fast
+            local runService = game:GetService("RunService")
+            local spinConnection
+            spinConnection = runService.RenderStepped:Connect(function(delta)
+                hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(360/0.05)*delta, 0)
+            end)
 
-                        -- teleport to target and attach
-                        char.HumanoidRootPart.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0)
-                        local weld = Instance.new("WeldConstraint")
-                        weld.Part0 = char.HumanoidRootPart
-                        weld.Part1 = targetRoot
-                        weld.Parent = char.HumanoidRootPart
-
-                        -- spin player
-                        local spinning = game:GetService("RunService").RenderStepped:Connect(function()
-                            char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(30), 0)
-                        end)
-
-                        -- apply fling
-                        local bv = Instance.new("BodyVelocity")
-                        bv.MaxForce = Vector3.new(1e5,1e5,1e5)
-                        bv.Velocity = targetRoot.CFrame.LookVector * 300 + Vector3.new(0,200,0)
-                        bv.Parent = targetRoot
-                        game:GetService("Debris"):AddItem(bv, 0.5)
-
-                        -- cleanup function
-                        local function cleanup()
-                            spinning:Disconnect()
-                            weld:Destroy()
-                            char.HumanoidRootPart.CFrame = originalCFrame
-                        end
-
-                        -- disconnect after fling or 4 seconds
-                        delay(4, cleanup)
-                    end
-                end
+            -- Let physics fling the target for 4 seconds, then stop
+            delay(4, function()
+                spinConnection:Disconnect()
+                hrp.CFrame = originalCFrame
             end)
         end)
-
-        print("Fling Tool added to your backpack!")
     end
 })
+
 
 
 -- 🎯 FUN TAB
