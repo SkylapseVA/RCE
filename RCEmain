@@ -430,15 +430,14 @@ TestTab:CreateButton({
 
 
 
+--WHITELISTED GAMES 
 
-
--- funny script to make whitelisted games appear so haha
 local currentPlaceId = game.PlaceId
 
 -- 17574618959
 if currentPlaceId == 17574618959 then
-    UniversalTab:CreateSection("Just a Baseplate")
-    UniversalTab:CreateButton({
+    local BaseplateTab = Window:CreateTab("Just a Baseplate", 100729310939881) -- new tab
+    BaseplateTab:CreateButton({
         Name = "Button for Just a Baseplate",
         Callback = function()
             print("You are in Just a Baseplate!")
@@ -447,8 +446,8 @@ if currentPlaceId == 17574618959 then
 
 -- 12341234
 elseif currentPlaceId == 12341234 then
-    UniversalTab:CreateSection("Section 12341234")
-    UniversalTab:CreateButton({
+    local Section123Tab = Window:CreateTab("Section 12341234", 100729310939881)
+    Section123Tab:CreateButton({
         Name = "Button for Section 12341234",
         Callback = function()
             print("You are in Section 12341234!")
@@ -457,8 +456,8 @@ elseif currentPlaceId == 12341234 then
 
 -- 141356
 elseif currentPlaceId == 141356 then
-    UniversalTab:CreateSection("Section 141356")
-    UniversalTab:CreateButton({
+    local Section141Tab = Window:CreateTab("Section 141356", 100729310939881)
+    Section141Tab:CreateButton({
         Name = "Button for Section 141356",
         Callback = function()
             print("You are in Section 141356!")
@@ -467,7 +466,14 @@ elseif currentPlaceId == 141356 then
 
 -- Not whitelisted
 else
-    -- Nothing appears
+    local NotAllowedTab = Window:CreateTab("Not an allowed game", 100729310939881)
+    NotAllowedTab:CreateButton({
+        Name = "Info",
+        Callback = function()
+            print("This game is not whitelisted!")
+        end
+    })
 end
+
 
 
