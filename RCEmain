@@ -262,6 +262,58 @@ UniversalTab:CreateButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
     end
 })
+UniversalTab:CreateButton({
+    Name = "Fling Player (UI Tool)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local mouse = player:GetMouse()
+        local originalCFrame = char:WaitForChild("HumanoidRootPart").CFrame
+
+        print("Click a player to fling...")
+
+        local clickConn
+        clickConn = mouse.Button1Down:Connect(function()
+            local target = mouse.Target
+            if target and target.Parent then
+                local targetHum = target.Parent:FindFirstChildOfClass("Humanoid")
+                local targetRoot = target.Parent:FindFirstChild("HumanoidRootPart")
+                if targetHum and targetRoot and target.Parent ~= char then
+                    clickConn:Disconnect()
+
+                    -- teleport to target and attach
+                    char.HumanoidRootPart.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0)
+                    local weld = Instance.new("WeldConstraint")
+                    weld.Part0 = char.HumanoidRootPart
+                    weld.Part1 = targetRoot
+                    weld.Parent = char.HumanoidRootPart
+
+                    -- spin player
+                    local spinning = game:GetService("RunService").RenderStepped:Connect(function()
+                        char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(30), 0)
+                    end)
+
+                    -- apply fling
+                    local bv = Instance.new("BodyVelocity")
+                    bv.MaxForce = Vector3.new(1e5,1e5,1e5)
+                    bv.Velocity = targetRoot.CFrame.LookVector * 300 + Vector3.new(0,200,0) -- strong fling
+                    bv.Parent = targetRoot
+                    game:GetService("Debris"):AddItem(bv, 0.5)
+
+                    -- cleanup function
+                    local function cleanup()
+                        spinning:Disconnect()
+                        weld:Destroy()
+                        char.HumanoidRootPart.CFrame = originalCFrame
+                    end
+
+                    -- disconnect after fling or 4 seconds
+                    delay(4, cleanup)
+                end
+            end
+        end)
+    end
+})
 
 -- 🎯 FUN TAB
 FunTab:CreateSection("Playground")
